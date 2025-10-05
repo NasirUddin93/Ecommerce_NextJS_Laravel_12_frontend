@@ -2,7 +2,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { apiUrl, adminToken } from "../common/http";
+import { apiUrl, adminToken } from "../../common/http";
+import AdminLayout from "../AdminLayout";
 
 interface Brand {
   id: number;
@@ -11,9 +12,7 @@ interface Brand {
 }
 
 export default function BrandsPage() {
-
   const [brands, setBrands] = useState<Brand[]>([]);
-  
   const [loader, setLoader] = useState(false);
 
   const fetchBrands = async () => {
@@ -29,21 +28,12 @@ export default function BrandsPage() {
       });
 
       const result = await res.json();
-      console.log("API result:", result); // 👈 check structure
       setLoader(false);
 
-      if (result.status === 200) {
-        // Check if result.data is array or nested
-        if (Array.isArray(result.data)) {
-          setBrands(result.data);
-        } else if (Array.isArray(result.data)) {
-          setBrands(result.data);
-        } else {
-          console.error("Unexpected response format:", result.data);
-          setBrands([]); // fallback
-        }
+      if (result.status === 200 && Array.isArray(result.data)) {
+        setBrands(result.data);
       } else {
-        console.error("Something went wrong:", result.message);
+        console.error("Unexpected response:", result);
       }
     } catch (error) {
       setLoader(false);
@@ -56,7 +46,7 @@ export default function BrandsPage() {
   }, []);
 
   return (
-    <div className="p-4">
+    <AdminLayout>
       <h1 className="text-3xl font-bold mb-4">Brands</h1>
       {loader ? (
         <div className="text-center py-6 text-gray-500">Loading...</div>
@@ -82,6 +72,6 @@ export default function BrandsPage() {
           )}
         </div>
       )}
-    </div>
+    </AdminLayout>
   );
 }

@@ -35,7 +35,7 @@ export default function RootLayout({
                 <Link href="/best-sellers" className="hover:text-blue-400">Best Sellers</Link>
                 <Link href="/about" className="hover:text-blue-400">About</Link>
                 <Link href="/contact" className="hover:text-blue-400">Contact</Link>
-                <Link href="/dashboard" className="hover:text-blue-400">login</Link>
+                <Link href="/admin/login" className="hover:text-blue-400">login</Link>
               </nav>
 
               {/* Mobile Hamburger */}
@@ -63,7 +63,7 @@ export default function RootLayout({
               <Link href="/best-sellers" className="block hover:text-blue-400">Best Sellers</Link>
               <Link href="/about" className="block hover:text-blue-400">About</Link>
               <Link href="/contact" className="block hover:text-blue-400">Contact</Link>
-              <Link href="/dashboard" className="block hover:text-blue-400">login</Link>
+              <Link href="/admin/login" className="block hover:text-blue-400">login</Link>
             </nav>
           )}
         </header>
