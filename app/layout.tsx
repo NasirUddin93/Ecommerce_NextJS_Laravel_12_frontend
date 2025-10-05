@@ -1,19 +1,10 @@
 "use client";
 
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
 import { useState } from "react";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 
 export default function RootLayout({
@@ -25,8 +16,8 @@ export default function RootLayout({
 
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-100 text-gray-900`} >
+      <body>
+      {/* <body className="bg-gray-100 text-gray-900"> */}
         {/* Header */}
         <header className="bg-gray-800 text-white shadow-md">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -44,6 +35,7 @@ export default function RootLayout({
                 <Link href="/best-sellers" className="hover:text-blue-400">Best Sellers</Link>
                 <Link href="/about" className="hover:text-blue-400">About</Link>
                 <Link href="/contact" className="hover:text-blue-400">Contact</Link>
+                <Link href="/dashboard" className="hover:text-blue-400">login</Link>
               </nav>
 
               {/* Mobile Hamburger */}
@@ -71,6 +63,7 @@ export default function RootLayout({
               <Link href="/best-sellers" className="block hover:text-blue-400">Best Sellers</Link>
               <Link href="/about" className="block hover:text-blue-400">About</Link>
               <Link href="/contact" className="block hover:text-blue-400">Contact</Link>
+              <Link href="/dashboard" className="block hover:text-blue-400">login</Link>
             </nav>
           )}
         </header>
