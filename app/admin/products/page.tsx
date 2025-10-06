@@ -1,34 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { apiUrl, adminToken } from "../../common/http";
+import { Product } from "./product";
 import AdminLayout from "../AdminLayout";
 import Image from "next/image";
+import { apiUrl, adminToken } from "../../common/http";
+import { useRouter } from "next/navigation";
 
-// TypeScript interface for product
-export interface Product {
-  id: number;
-  category_id: number;
-  brand_id: number;
-  name: string;
-  sku: string;
-  description?: string;
-  base_price: number;
-  stock_quantity: number;
-  weight?: number;
-  is_seasonal: boolean;
-  seasonal_start_date?: string | null; // ISO date string or null
-  seasonal_end_date?: string | null;   // ISO date string or null
-  status: "active" | "inactive";
-  created_at: string;  // timestamp
-  updated_at: string;  // timestamp
-  deleted_at?: string | null; // for soft delete
-}
+
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loader, setLoader] = useState(false);
   const [search, setSearch] = useState("");
+  const router = useRouter(); // ✅ Initialize router
 
   const fetchProducts = async () => {
     try {
@@ -46,7 +31,7 @@ export default function ProductsPage() {
       setLoader(false);
 
       if (result.status === 200 && Array.isArray(result.data)) {
-        // console.log(result.data);
+        console.log(result.data);
         setProducts(result.data);
       } else {
         // console.log("result:", result);
@@ -57,6 +42,15 @@ export default function ProductsPage() {
       console.error("Error fetching categories:", error);
     }
   };
+
+    const deleteProduct = async (id: number) => {
+        if (!confirm("Are you sure to delete?")) return;
+        await fetch(`${apiUrl}/products/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${adminToken()}` },
+        });
+        fetchProducts();
+    };
 
   useEffect(() => {
     fetchProducts();
@@ -80,6 +74,12 @@ export default function ProductsPage() {
           onChange={(e) => setSearch(e.target.value)}
           className="w-full md:w-1/3 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
+        <button
+          onClick={() => router.push("/admin/products/create")}
+          className="ml-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+        >
+          + Add Product
+        </button>
       </div>
 
       {loader ? (
@@ -89,6 +89,7 @@ export default function ProductsPage() {
           <table className="min-w-full text-sm text-left text-gray-600">
             <thead className="bg-gray-100 text-gray-700 uppercase text-xs">
               <tr>
+                <th className="px-6 py-3">Image</th>
                 <th className="px-6 py-3">ID</th>
                 <th className="px-6 py-3">Name</th>
                 <th className="px-6 py-3">Status</th>
@@ -101,7 +102,16 @@ export default function ProductsPage() {
                   key={product.id}
                   className="border-b hover:bg-gray-50 transition"
                 >
-                    <td><Image src={product.product_image} alt={product.name} width={40} height={40} /></td>
+                    <td>
+                        {product.product_images[product.id] && (
+                            <Image
+                            src={product.product_images[product.id].image_url}
+                            alt={product.name}
+                            width={50}
+                            height={50}
+                            />
+                        )}                    
+                  </td>
                   <td className="px-6 py-3">{product.sku}</td>
                   <td className="px-6 py-3 font-medium">{product.name}</td>
                   <td className="px-6 py-3">
@@ -125,6 +135,7 @@ export default function ProductsPage() {
                     <button
                       className="text-yellow-600 hover:text-yellow-800"
                       title="Edit"
+                      onClick={() => alert("Edit page")}
                     >
                       ✏️
                     </button>
@@ -132,6 +143,7 @@ export default function ProductsPage() {
                     <button
                       className="text-red-600 hover:text-red-800"
                       title="Delete"
+                      onClick={() => deleteProduct(product.id)}
                     >
                       🗑
                     </button>
@@ -149,3 +161,6 @@ export default function ProductsPage() {
     </AdminLayout>
   );
 }
+
+
+
