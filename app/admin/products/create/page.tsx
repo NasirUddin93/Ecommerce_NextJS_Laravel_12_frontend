@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { apiUrl, adminToken } from "../../../common/http";
+import AdminLayout from "../../AdminLayout";
 
 interface Category {
   id: number;
@@ -142,6 +143,9 @@ const handleChange = (
   };
 
   return (
+    <AdminLayout> 
+
+ 
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">Add Product</h1>
       <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-4">
@@ -231,5 +235,6 @@ const handleChange = (
         </button>
       </form>
     </div>
+       </AdminLayout>
   );
 }
