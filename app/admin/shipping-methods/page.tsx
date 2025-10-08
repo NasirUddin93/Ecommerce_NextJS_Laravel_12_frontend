@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { apiUrl, adminToken } from "../../common/http";
 import AdminLayout from "../AdminLayout";
 
-interface Shipping {
+interface ShippingMethods {
   id: number;
   name: string;
   description?: string | null;
@@ -21,17 +21,17 @@ interface ApiListResponse<T> {
 }
 
 export default function ShippingsPage() {
-  const [shippings, setShippings] = useState<Shipping[]>([]);
   const [loader, setLoader] = useState(false);
+  const [shippingMethods, setShippingMethods] = useState<ShippingMethods[]>([]);
   const [search, setSearch] = useState("");
   const [error, setError] = useState<string | null>(null);
 
-  const fetchShippings = async () => {
+  const fetchShippingMethods = async () => {
     try {
       setLoader(true);
       setError(null);
 
-      const res = await fetch(`${apiUrl}/shippings`, {
+      const res = await fetch(`${apiUrl}/shipping-methods`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -41,36 +41,36 @@ export default function ShippingsPage() {
         cache: "no-store",
       });
 
-      const result: ApiListResponse<Shipping> = await res.json();
+      const result: ApiListResponse<ShippingMethods> = await res.json();
       setLoader(false);
 
       if (result?.status === 200 && Array.isArray(result?.data)) {
-        setShippings(result.data);
+        setShippingMethods(result.data);
       } else {
         setError("Unexpected API response.");
         console.error("Unexpected response:", result);
       }
     } catch (e) {
       setLoader(false);
-      setError("Failed to load shippings.");
+      setError("Failed to load shipping methods.");
       console.error("Error fetching shippings:", e);
     }
   };
 
   useEffect(() => {
-    fetchShippings();
+    fetchShippingMethods();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    if (!q) return shippings;
-    return shippings.filter((s) => {
+    if (!q) return shippingMethods;
+    return shippingMethods.filter((s) => {
       const name = s.name?.toLowerCase() ?? "";
       const desc = (s.description ?? "").toString().toLowerCase();
       return name.includes(q) || desc.includes(q);
     });
-  }, [search, shippings]);
+  }, [search, shippingMethods]);
 
   const asBoolean = (v: boolean | number) => {
     if (typeof v === "boolean") return v;
@@ -86,9 +86,9 @@ export default function ShippingsPage() {
   return (
     <AdminLayout>
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-3xl font-bold">Shippings</h1>
+        <h1 className="text-3xl font-bold">Shipping Methods</h1>
         <button
-          onClick={fetchShippings}
+          onClick={fetchShippingMethods}
           className="px-3 py-2 rounded-lg border hover:bg-gray-50"
           title="Refresh"
         >
@@ -117,7 +117,7 @@ export default function ShippingsPage() {
       )}
 
       {!loader && !error && filtered.length === 0 && (
-        <div className="text-center py-6 text-gray-500">No shippings found</div>
+        <div className="text-center py-6 text-gray-500">No shipping methods found</div>
       )}
 
       {!loader && !error && filtered.length > 0 && (
@@ -134,14 +134,14 @@ export default function ShippingsPage() {
               </tr>
             </thead>
             <tbody>
-              {filtered.map((s) => {
-                const isFree = asBoolean(s.is_free_shipping);
+              {filtered.map((sm) => {
+                const isFree = asBoolean(sm.is_free_shipping);
                 return (
-                  <tr key={s.id} className="border-b hover:bg-gray-50 transition">
-                    <td className="px-6 py-3">{s.id}</td>
-                    <td className="px-6 py-3 font-medium">{s.name}</td>
+                  <tr key={sm.id} className="border-b hover:bg-gray-50 transition">
+                    <td className="px-6 py-3">{sm.id}</td>
+                    <td className="px-6 py-3 font-medium">{sm.name}</td>
                     <td className="px-6 py-3">
-                      {s.description ? s.description : <span className="text-gray-400">—</span>}
+                      {sm.description ? sm.description : <span className="text-gray-400">—</span>}
                     </td>
                     <td className="px-6 py-3">
                       {isFree ? (
@@ -149,7 +149,7 @@ export default function ShippingsPage() {
                           Free
                         </span>
                       ) : (
-                        <span>{formatFee(s.fee)}</span>
+                        <span>{formatFee(sm.fee)}</span>
                       )}
                     </td>
                     <td className="px-6 py-3">
