@@ -53,12 +53,15 @@ export default function AdminLayout({
           <a href="/admin/coupons" className="block p-2 rounded hover:bg-gray-200">
             Coupon
           </a>
-          <a href="/admin/shippings" className="block p-2 rounded hover:bg-gray-200">
-            Shipping
+          <a href="/admin/shipping-methods" className="block p-2 rounded hover:bg-gray-200">
+            Shipping methods  
           </a>
 
           <a href="/admin/orders" className="block p-2 rounded hover:bg-gray-200">
             Orders
+          </a>
+          <a href="/admin/notifications" className="block p-2 rounded hover:bg-gray-200">
+            Notifications 
           </a>
           <a href="/admin/users" className="block p-2 rounded hover:bg-gray-200">
             Users
