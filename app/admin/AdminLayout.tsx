@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link"; 
 
 export default function AdminLayout({
   children,
@@ -34,41 +35,50 @@ export default function AdminLayout({
       >
         <div className="p-4 text-2xl font-bold border-b">Admin</div>
         <nav className="p-4 space-y-2">
-          <a href="/admin/dashboard" className="block p-2 rounded hover:bg-gray-200">
+          <Link href="/admin/dashboard" className="block p-2 rounded hover:bg-gray-200">
             Dashboard
-          </a>
-          <a href="/admin/brands" className="block p-2 rounded hover:bg-gray-200">
+          </Link>
+          <Link href="/admin/brands" className="block p-2 rounded hover:bg-gray-200">
             Brands
-          </a>
-          <a href="/admin/categories" className="block p-2 rounded hover:bg-gray-200">
+          </Link>
+          <Link href="/admin/categories" className="block p-2 rounded hover:bg-gray-200">
             Categories
-          </a>
+          </Link>
 
-          <a href="/admin/products" className="block p-2 rounded hover:bg-gray-200">
+          <Link href="/admin/products" className="block p-2 rounded hover:bg-gray-200">
             Products
-          </a>
-          <a href="/admin/sizes" className="block p-2 rounded hover:bg-gray-200">
-            Sizes
-          </a>
-          <a href="/admin/coupons" className="block p-2 rounded hover:bg-gray-200">
-            Coupon
-          </a>
-          <a href="/admin/shipping-methods" className="block p-2 rounded hover:bg-gray-200">
-            Shipping methods  
-          </a>
+          </Link>
 
-          <a href="/admin/orders" className="block p-2 rounded hover:bg-gray-200">
+          <Link href="/admin/product-variants" className="block p-2 rounded hover:bg-gray-200">
+            Products Variants
+          </Link>
+
+          <Link href="/admin/wishlist" className="block p-2 rounded hover:bg-gray-200">
+            Wishlist
+          </Link>
+
+          <Link href="/admin/sizes" className="block p-2 rounded hover:bg-gray-200">
+            Sizes
+          </Link>
+          <Link href="/admin/coupons" className="block p-2 rounded hover:bg-gray-200">
+            Coupon
+          </Link>
+          <Link href="/admin/shipping-methods" className="block p-2 rounded hover:bg-gray-200">
+            Shipping methods  
+          </Link>
+
+          <Link href="/admin/orders" className="block p-2 rounded hover:bg-gray-200">
             Orders
-          </a>
-          <a href="/admin/notifications" className="block p-2 rounded hover:bg-gray-200">
+          </Link>
+          <Link href="/admin/notifications" className="block p-2 rounded hover:bg-gray-200">
             Notifications 
-          </a>
-          <a href="/admin/users" className="block p-2 rounded hover:bg-gray-200">
+          </Link>
+          <Link href="/admin/users" className="block p-2 rounded hover:bg-gray-200">
             Users
-          </a>
-          <a href="/admin/reports" className="block p-2 rounded hover:bg-gray-200">
+          </Link>
+          <Link href="/admin/reports" className="block p-2 rounded hover:bg-gray-200">
             Reports
-          </a>
+          </Link>
           <button
             onClick={() => {
               localStorage.removeItem("adminToken");
