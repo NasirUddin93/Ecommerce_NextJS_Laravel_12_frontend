@@ -13,9 +13,9 @@ export interface Notification {
   message: string;
   type: NotificationType;
   is_read: boolean | number;   // Laravel might return 0/1
-  read_at?: string | null;
-  created_at?: string;
-  updated_at?: string;
+  read_at?: Date | null;
+  created_at?: Date;
+  updated_at?: Date;
 }
 
 interface ApiListResponse<T> {
