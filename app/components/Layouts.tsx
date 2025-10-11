@@ -16,6 +16,7 @@ export default function Layout({ children }: LayoutProps) {
   const navigation = [
     { name: "Home", href: "/" },
     { name: "Shop", href: "/shop" },
+    { name: "Featured Products", href: "/featured-products" },
     { name: "Categories", href: "/categories" },
     { name: "New Arrivals", href: "/new-arrivals" },
     { name: "Best Sellers", href: "/best-sellers" },
@@ -75,7 +76,7 @@ export default function Layout({ children }: LayoutProps) {
               </div>
 
               {/* User Account */}
-              <Link href="/account" className="p-2 hover:bg-gray-100 rounded-full">
+              <Link href="/admin/login" className="p-2 hover:bg-gray-100 rounded-full">
                 <User className="h-5 w-5 text-gray-700" />
               </Link>
 
