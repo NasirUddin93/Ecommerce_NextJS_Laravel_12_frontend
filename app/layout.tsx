@@ -80,18 +80,42 @@
 // }
 
 
-// app/layout.tsx
+//app/layout.tsx
+// import { CartProvider } from './contexts/CartContext';
+// import "./globals.css";
+// import { ReactNode } from "react";
+
+// interface RootLayoutProps {
+//   children: ReactNode;
+// }
+
+// export default function RootLayout({ children }: RootLayoutProps) {
+//   return (
+//     <html lang="en">
+//       <body>{children}</body>
+//     </html>
+//   );
+// }
+
+
+// import { CartProvider } from '@/contexts/CartContext';
+import { CartProvider } from './contexts/CartContext';
+// import Layout from '@/components/Layout';
+import Layout from './components/Layouts';
 import "./globals.css";
-import { ReactNode } from "react";
 
-interface RootLayoutProps {
-  children: ReactNode;
-}
-
-export default function RootLayout({ children }: RootLayoutProps) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <CartProvider>
+          <Layout>{children}</Layout>
+        </CartProvider>
+      </body>
     </html>
   );
 }
