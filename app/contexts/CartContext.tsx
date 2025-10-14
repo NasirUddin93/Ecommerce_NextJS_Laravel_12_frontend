@@ -1,15 +1,20 @@
-// contexts/CartContext.tsx
 "use client";
-
 import { createContext, useContext, useState, ReactNode } from 'react';
 
 export interface Product {
-  id: string;
-  name: string;
-  price: number;
-  image: string;
-  description?: string;
-  category?: string;
+    id: number;
+    category_id: number;
+    brand_id: number;
+    name: string;
+    sku: string;
+    description: string;
+    base_price: number; // This should be number
+    stock_quantity: number;
+    weight: number;
+    is_seasonal: boolean;
+    seasonal_start_date: Date;
+    seasonal_end_date: Date;
+    images?: { image_url: string }[];
 }
 
 export interface CartItem {
@@ -20,8 +25,8 @@ export interface CartItem {
 interface CartContextType {
   cartItems: CartItem[];
   addToCart: (product: Product) => void;
-  removeFromCart: (productId: string) => void;
-  updateQuantity: (productId: string, quantity: number) => void;
+  removeFromCart: (productId: number) => void;
+  updateQuantity: (productId: number, quantity: number) => void;
   clearCart: () => void;
   getCartTotal: () => number;
   getCartItemsCount: () => number;
@@ -33,28 +38,32 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
   const addToCart = (product: Product) => {
+    // Ensure base_price is a number
+    const productWithNumberPrice = {
+      ...product,
+      base_price: Number(product.base_price)
+    };
+
     setCartItems(prevItems => {
       const existingItem = prevItems.find(item => item.product.id === product.id);
       
       if (existingItem) {
-        // If item exists, increase quantity
         return prevItems.map(item =>
           item.product.id === product.id
             ? { ...item, quantity: item.quantity + 1 }
             : item
         );
       } else {
-        // If item doesn't exist, add new item
-        return [...prevItems, { product, quantity: 1 }];
+        return [...prevItems, { product: productWithNumberPrice, quantity: 1 }];
       }
     });
   };
 
-  const removeFromCart = (productId: string) => {
+  const removeFromCart = (productId: number) => {
     setCartItems(prevItems => prevItems.filter(item => item.product.id !== productId));
   };
 
-  const updateQuantity = (productId: string, quantity: number) => {
+  const updateQuantity = (productId: number, quantity: number) => {
     if (quantity <= 0) {
       removeFromCart(productId);
       return;
@@ -73,7 +82,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
   };
 
   const getCartTotal = () => {
-    return cartItems.reduce((total, item) => total + item.product.price * item.quantity, 0);
+    return cartItems.reduce((total, item) => {
+      const price = Number(item.product.base_price);
+      return total + price * item.quantity;
+    }, 0);
   };
 
   const getCartItemsCount = () => {

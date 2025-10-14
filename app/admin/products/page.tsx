@@ -6,6 +6,7 @@ import AdminLayout from "../AdminLayout";
 import { Product } from "./product";
 
 export default function ProductList() {
+  
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");

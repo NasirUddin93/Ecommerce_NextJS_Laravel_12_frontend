@@ -2,22 +2,8 @@
 import Layout from "./components/Layouts";
 import Image from "next/image";
 import Link from "next/link";
-import { Star, Truck, Shield, RefreshCw } from "lucide-react";
+import {Truck, Shield, RefreshCw } from "lucide-react";
 import FeaturedProducts from "./featured-products/page";  
-
-interface Product {
-  id: number;
-  name: string;
-  price: number;
-  originalPrice?: number;
-  rating: number;
-  reviewCount: number;
-  image: string;
-  isNew?: boolean;
-  isOnSale?: boolean;
-
-
-}
 
 interface Category {
   name: string;
@@ -27,51 +13,11 @@ interface Category {
 
 export default function Home() {
 
-  const featuredProducts: Product[] = [
-    {
-      id: 1,
-      name: "Classic White T-Shirt",
-      price: 29.99,
-      originalPrice: 39.99,
-      rating: 4.5,
-      reviewCount: 128,
-      image: "/T-Shirt.webp",
-      isOnSale: true,
-    },
-    {
-      id: 2,
-      name: "Slim Fit Jeans",
-      price: 59.99,
-      rating: 4.2,
-      reviewCount: 89,
-      image: "/jeans.webp",
-      isNew: true,
-    },
-    {
-      id: 3,
-      name: "Wireless Headphones",
-      price: 99.99,
-      originalPrice: 129.99,
-      rating: 4.8,
-      reviewCount: 256,
-      image: "/headphone.jpg",
-      isOnSale: true,
-    },
-    {
-      id: 4,
-      name: "Sports Running Shoes",
-      price: 79.99,
-      rating: 4.3,
-      reviewCount: 167,
-      image: "/shoes.jpg",
-    },
-  ];
-
   const categories: Category[] = [
-    { name: "Men's Fashion", image: "/public/men_fashon.jpg", itemCount: 234 },
-    { name: "Women's Fashion", image: "/public/women_fashon.jpg", itemCount: 189 },
-    { name: "Electronics", image: "/public/electronics.jpg", itemCount: 156 },
-    { name: "Home & Living", image: "/public/home.webp", itemCount: 98 },
+    { name: "Men's Fashion", image: "/men_fashon.jpg", itemCount: 234 },
+    { name: "Women's Fashion", image: "/women_fashon.jpg", itemCount: 189 },
+    { name: "Electronics", image: "/electronics.jpg", itemCount: 156 },
+    { name: "Home & Living", image: "/home.webp", itemCount: 98 },
   ];
 
   const features = [
@@ -92,18 +38,6 @@ export default function Home() {
     },
   ];
 
-  const renderStars = (rating: number) => {
-    return Array.from({ length: 5 }).map((_, index) => (
-      <Star
-        key={index}
-        className={`h-4 w-4 ${
-          index < Math.floor(rating)
-            ? "text-yellow-400 fill-current"
-            : "text-gray-300"
-        }`}
-      />
-    ));
-  };
   
   return (
     <Layout>
@@ -152,6 +86,9 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Featured Products */}
+      <FeaturedProducts/>
+
       {/* Categories Section */}
       <section className="bg-gray-50 py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -177,7 +114,7 @@ export default function Home() {
                       src={category.image}
                       alt={category.name}
                       fill
-                      className="object-cover group-hover:scale-105 transition-transform"
+                      className="object-cover object-[20%_10%] group-hover:scale-105 transition-transform"
                     />
                   </div>
                   <div className="p-4">
@@ -193,11 +130,7 @@ export default function Home() {
             ))}
           </div>
         </div>
-      </section>
-
-      {/* Featured Products */}
-      <FeaturedProducts/>
-      
+      </section>      
 
       {/* Newsletter Section */}
       <section className="bg-gray-900 text-white py-16">

@@ -1,10 +1,9 @@
-// app/cart/page.tsx
 "use client";
 
-// import { useCart } from '@/contexts/CartContext';
 import { useCart } from '../contexts/CartContext';
 import { Minus, Plus, Trash2, ShoppingBag } from 'lucide-react';
 import Link from 'next/link';
+import { getImageUrl } from '../common/http';
 
 export default function CartPage() {
   const { 
@@ -15,6 +14,17 @@ export default function CartPage() {
     clearCart 
   } = useCart();
 
+  // Safe price conversion function
+  const getSafePrice = (price: any): number => {
+    const numPrice = Number(price);
+    return isNaN(numPrice) ? 0 : numPrice;
+  };
+
+  // Safe toFixed function
+  const formatPrice = (price: any): string => {
+    return getSafePrice(price).toFixed(2);
+  };
+
   if (cartItems.length === 0) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -23,7 +33,7 @@ export default function CartPage() {
           <h2 className="mt-4 text-2xl font-bold text-gray-900">Your cart is empty</h2>
           <p className="mt-2 text-gray-600">Start shopping to add items to your cart</p>
           <Link
-            href="/shop"
+            href="/"
             className="mt-6 inline-block bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors"
           >
             Continue Shopping
@@ -41,57 +51,64 @@ export default function CartPage() {
         {/* Cart Items */}
         <div className="lg:col-span-2">
           <div className="bg-white rounded-lg shadow-sm border">
-            {cartItems.map((item) => (
-              <div
-                key={item.product.id}
-                className="flex items-center space-x-4 p-6 border-b last:border-b-0"
-              >
-                <img
-                  src={item.product.image}
-                  alt={item.product.name}
-                  className="w-20 h-20 object-cover rounded"
-                />
-                
-                <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-gray-900">
-                    {item.product.name}
-                  </h3>
-                  <p className="text-gray-600">${item.product.price.toFixed(2)}</p>
-                </div>
-
-                <div className="flex items-center space-x-3">
-                  <button
-                    onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
-                    className="p-1 rounded-full hover:bg-gray-100"
-                  >
-                    <Minus className="h-4 w-4" />
-                  </button>
+            {cartItems.map((item) => {
+              const itemPrice = getSafePrice(item.product.base_price);
+              const itemTotal = itemPrice * item.quantity;
+              
+              return (
+                <div
+                  key={item.product.id}
+                  className="flex items-center space-x-4 p-6 border-b last:border-b-0"
+                >
+                  <img
+                    src={item.product.images && item.product.images.length > 0 
+                      ? getImageUrl(item.product.images[0].image_url) 
+                      : '/placeholder-image.jpg'}
+                    alt={item.product.name}
+                    className="w-20 h-20 object-cover rounded"
+                  />
                   
-                  <span className="w-8 text-center font-semibold">
-                    {item.quantity}
-                  </span>
-                  
-                  <button
-                    onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
-                    className="p-1 rounded-full hover:bg-gray-100"
-                  >
-                    <Plus className="h-4 w-4" />
-                  </button>
-                </div>
+                  <div className="flex-1">
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      {item.product.name}
+                    </h3>
+                    <p className="text-gray-600">${formatPrice(item.product.base_price)}</p>
+                  </div>
 
-                <div className="text-right">
-                  <p className="text-lg font-semibold">
-                    ${(item.product.price * item.quantity).toFixed(2)}
-                  </p>
-                  <button
-                    onClick={() => removeFromCart(item.product.id)}
-                    className="text-red-600 hover:text-red-800 mt-2"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
+                  <div className="flex items-center space-x-3">
+                    <button
+                      onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
+                      className="p-1 rounded-full hover:bg-gray-100"
+                    >
+                      <Minus className="h-4 w-4" />
+                    </button>
+                    
+                    <span className="w-8 text-center font-semibold">
+                      {item.quantity}
+                    </span>
+                    
+                    <button
+                      onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
+                      className="p-1 rounded-full hover:bg-gray-100"
+                    >
+                      <Plus className="h-4 w-4" />
+                    </button>
+                  </div>
+
+                  <div className="text-right">
+                    <p className="text-lg font-semibold">
+                      ${itemTotal.toFixed(2)}
+                    </p>
+                    <button
+                      onClick={() => removeFromCart(item.product.id)}
+                      className="text-red-600 hover:text-red-800 mt-2"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           <button
@@ -125,12 +142,20 @@ export default function CartPage() {
             </div>
           </div>
 
-          <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold transition-colors">
+          {/* <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold transition-colors">
             Proceed to Checkout
-          </button>
+          </button> */}
+
+          {/* // In your CartPage component, replace the checkout button: */}
+        <Link
+          href="/checkout"
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold transition-colors text-center block"
+        >
+          Proceed to Checkout
+        </Link>
           
           <Link
-            href="/shop"
+            href="/"
             className="block text-center mt-4 text-blue-600 hover:text-blue-800 font-medium"
           >
             Continue Shopping
