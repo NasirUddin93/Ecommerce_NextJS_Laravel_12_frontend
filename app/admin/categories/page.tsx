@@ -84,7 +84,6 @@ export default function CategoriesPage() {
                 <th className="px-6 py-3">ID</th>
                 <th className="px-6 py-3">Name</th>
                 <th className="px-6 py-3">Description</th>
-
                 <th className="px-6 py-3">Status</th>
                 <th className="px-6 py-3 text-center">Actions</th>
               </tr>
