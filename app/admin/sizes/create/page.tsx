@@ -3,20 +3,19 @@ import { useState } from "react";
 import { apiUrl, adminToken } from "../../../common/http";
 import AdminLayout from "../../AdminLayout";
 
-interface CategoryForm {
+interface SizeForm {
   name: string;
-  description: string;
   status: number;
 }
 
-export default function AddCategory() {
+export default function AddSize() {
   
-  const [form, setForm] = useState<CategoryForm>({ name: "", description:"", status: 1 });
+  const [form, setForm] = useState<SizeForm>({ name: "",  status: 1 });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
-    const key = name as keyof CategoryForm;
+    const key = name as keyof SizeForm;
 
     setForm({ ...form, [key]: type === "number" ? Number(value) : value });
   };
@@ -29,10 +28,9 @@ export default function AddCategory() {
     try {
       const formData = new FormData();
       formData.append("name", form.name);
-      formData.append("description", form.description);
       formData.append("status", String(form.status));
 
-      const res = await fetch(`${apiUrl}/categories`, {
+      const res = await fetch(`${apiUrl}/sizes`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${adminToken()}`,
@@ -47,11 +45,11 @@ export default function AddCategory() {
         return;
       }
 
-      alert("✅ Category created successfully!");
-      setForm({ name: "", description: "", status: 1 });
+      alert("✅ Size created successfully!");
+      setForm({ name: "",  status: 1 });
     } catch (err) {
       console.error("Error:", err);
-      alert("❌ Failed to create Category");
+      alert("❌ Failed to create Size");
     } finally {
       setIsSubmitting(false);
     }
@@ -60,32 +58,20 @@ export default function AddCategory() {
   return (
     <AdminLayout>
       <div className="p-4 max-w-4xl mx-auto">
-        <h1 className="text-2xl font-bold mb-6">Add Category</h1>
+        <h1 className="text-2xl font-bold mb-6">Add Size</h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1">Category Name</label>
+            <label className="block text-sm font-medium mb-1">Size Name</label>
             <input
               name="name"
-              placeholder="Enter Category name"
+              placeholder="Enter Size name"
               value={form.name}
               onChange={handleChange}
               className="w-full border border-gray-300 rounded-lg p-2"
               required
             />
           </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">Category Description</label>
-            <input
-              name="description"
-              placeholder="Enter description"
-              value={form.description}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded-lg p-2"
-              required
-            />
-          </div>
-
           <div>
             <label className="block text-sm font-medium mb-1">Status</label>
             <select
@@ -98,13 +84,12 @@ export default function AddCategory() {
               <option value={0}>Inactive</option>
             </select>
           </div>
-
           <button
             type="submit"
             disabled={isSubmitting}
             className="w-full bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600 disabled:opacity-50"
           >
-            {isSubmitting ? "Creating Brand..." : "Add Brand"}
+            {isSubmitting ? "Creating Size..." : "Add Size"}
           </button>
         </form>
       </div>
