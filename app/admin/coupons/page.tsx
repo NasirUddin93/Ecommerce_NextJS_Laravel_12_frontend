@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { apiUrl, adminToken } from "../../common/http";
 import AdminLayout from "../AdminLayout";
+import Link from "next/link";
 
 type DiscountType = "percentage" | "fixed";
 type CouponStatus = "active" | "inactive";
@@ -110,12 +111,18 @@ export default function CouponsPage() {
             ↻ Refresh
           </button>
           {/* You can wire this to a Create Coupon page or modal */}
-          <button
+          {/* <button
             className="px-3 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
             title="Create"
           >
             + New Coupon
-          </button>
+          </button> */}
+          <Link
+              href="/admin/coupons/create"
+              className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+            >
+              + Add Coupons
+      </Link>
         </div>
       </div>
 
