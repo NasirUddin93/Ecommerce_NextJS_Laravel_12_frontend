@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { apiUrl, adminToken } from "../../common/http";
 import AdminLayout from "../AdminLayout";
+import Link from "next/link";
 
 interface ShippingMethods {
   id: number;
@@ -106,6 +107,12 @@ export default function ShippingsPage() {
           className="w-full md:w-1/2 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
+      <Link
+              href="/admin/shipping-methods/create"
+              className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+            >
+              + Add Shipping Method
+      </Link>
 
       {/* States */}
       {loader && (
