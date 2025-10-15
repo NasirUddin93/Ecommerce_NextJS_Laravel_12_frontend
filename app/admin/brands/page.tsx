@@ -78,7 +78,7 @@ export default function BrandList() {
               className="border border-gray-300 rounded-lg p-2 w-64 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
             <Link
-              href="/admin/products/create"
+              href="/admin/brands/create"
               className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
             >
               + Add Brand
