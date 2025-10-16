@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { apiUrl, adminToken } from "../../common/http";
 import AdminLayout from "../AdminLayout";
+import Link from "next/link";
 
 // TypeScript interface for category
 export interface Order {
@@ -19,7 +20,7 @@ export interface Order {
 }
 
 
-export default function CategoriesPage() {
+export default function OrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loader, setLoader] = useState(false);
   const [search, setSearch] = useState("");
@@ -56,7 +57,7 @@ export default function CategoriesPage() {
     fetchOrders();
   }, []);
 
-  // Filter categories based on search text
+  // Filter orders based on search text
   const filteredOrders = orders.filter((order) =>
     order.id.toString().includes(search.toLowerCase())
   );
@@ -74,6 +75,12 @@ export default function CategoriesPage() {
           onChange={(e) => setSearch(e.target.value)}
           className="w-full md:w-1/3 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
+        <Link
+              href="/admin/orders/create"
+              className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+            >
+              + Add Order
+        </Link>
       </div>
 
       {loader ? (
@@ -84,7 +91,11 @@ export default function CategoriesPage() {
             <thead className="bg-gray-100 text-gray-700 uppercase text-xs">
               <tr>
                 <th className="px-6 py-3">ID</th>
-                <th className="px-6 py-3">Name</th>
+                <th className="px-6 py-3">User ID (Name)</th>
+                <th className="px-6 py-3">Total Amount</th>
+                <th className="px-6 py-3">Discount Amount</th>
+                <th className="px-6 py-3">Shipping Fee</th>
+                <th className="px-6 py-3">Final Amount</th>
                 <th className="px-6 py-3">Status</th>
                 <th className="px-6 py-3 text-center">Actions</th>
               </tr>
@@ -97,6 +108,10 @@ export default function CategoriesPage() {
                 >
                   <td className="px-6 py-3">{order.id}</td>
                   <td className="px-6 py-3 font-medium">{order.user_id}</td>
+                  <td className="px-6 py-3 font-medium">{order.total_amount}</td>
+                  <td className="px-6 py-3 font-medium">{order.discount_amount}</td>
+                  <td className="px-6 py-3 font-medium">{order.shipping_fee}</td>
+                  <td className="px-6 py-3 font-medium">{order.final_amount}</td>
                   <td className="px-6 py-3">
                     <span
                       className={`px-2 py-1 text-xs rounded-full ${
