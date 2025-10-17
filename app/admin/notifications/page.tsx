@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { apiUrl, adminToken } from "../../common/http";
 import AdminLayout from "../AdminLayout";
+import Link from "next/link";
 
 type NotificationType = "order" | "payment" | "shipping" | "system" | "other";
 
@@ -105,6 +106,12 @@ export default function NotificationsPage() {
           className="w-full md:w-1/2 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
+      <Link
+              href="/admin/notifications/create"
+              className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+            >
+              + Add Order
+        </Link>
 
       {/* States */}
       {loader && <div className="text-center py-6 text-gray-500">Loading...</div>}
@@ -120,7 +127,7 @@ export default function NotificationsPage() {
               <tr>
                 <th className="px-6 py-3">ID</th>
                 <th className="px-6 py-3">User</th>
-                <th className="px-6 py-3">Title</th>
+            
                 <th className="px-6 py-3">Message</th>
                 <th className="px-6 py-3">Type</th>
                 <th className="px-6 py-3">Read</th>
@@ -136,7 +143,7 @@ export default function NotificationsPage() {
                   <tr key={n.id} className="border-b hover:bg-gray-50 transition">
                     <td className="px-6 py-3">{n.id}</td>
                     <td className="px-6 py-3 font-medium">{n.user_id}</td>
-                    <td className="px-6 py-3">{n.title}</td>
+                    
                     <td className="px-6 py-3">
                       <span className="line-clamp-2">{n.message}</span>
                     </td>
