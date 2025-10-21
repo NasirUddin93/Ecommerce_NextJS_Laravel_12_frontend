@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { apiUrl, adminToken } from "../../common/http";
 import AdminLayout from "../AdminLayout";
+import Link from "next/link";
 
 // TypeScript interface for category
 interface Payment {
@@ -10,7 +11,7 @@ interface Payment {
   order_id: number;
   user_id: number;
   payment_method: 'debit'|'credit'|'refund'|'chargeback';
-  transaction_id: number;
+  transaction_id: string;
   amount: number;
   status: 'pending'|'success'|'failed'|'refunded';
   created_at?: Date;
@@ -27,7 +28,7 @@ export default function ProductVariants() {
   const fetchSizes = async () => {
     try {
       setLoader(true);
-      const res = await fetch(`${apiUrl}/transactions`, {
+      const res = await fetch(`${apiUrl}/payments`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -73,6 +74,12 @@ export default function ProductVariants() {
           className="w-full md:w-1/3 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
+      <Link
+              href="/admin/payments/create"
+              className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+            >
+              + Add Payment
+        </Link>
 
       {loader ? (
         <div className="text-center py-6 text-gray-500">Loading...</div>
@@ -83,8 +90,8 @@ export default function ProductVariants() {
               <tr>
                 <th className="px-6 py-3">ID</th>
                 <th className="px-6 py-3">Order ID</th>
-                <th className="px-6 py-3">Method</th>
-                <th className="px-6 py-3">Tran_Id</th>
+                <th className="px-6 py-3">Payment Method</th>
+                <th className="px-6 py-3">Transaction Id</th>
                 <th className="px-6 py-3">Amount</th>
                 <th className="px-6 py-3">Status</th>
                 <th className="px-6 py-3">Created At</th>
