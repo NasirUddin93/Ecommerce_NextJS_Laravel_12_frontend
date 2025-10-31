@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { apiUrl, adminToken } from "../../common/http";
 import AdminLayout from "../AdminLayout";
+import Link from "next/link";
 
 // TypeScript interface for category
 export interface Review {
@@ -74,6 +75,12 @@ export default function CategoriesPage() {
           className="w-full md:w-1/3 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
+      <Link
+              href="/admin/reviews/create"
+              className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+            >
+              + Add Review
+      </Link>
 
       {loader ? (
         <div className="text-center py-6 text-gray-500">Loading...</div>
