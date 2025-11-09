@@ -1,6 +1,8 @@
-export const apiUrl = 'http://127.0.0.1:8000/api'
+// export const apiUrl = 'http://127.0.0.1:8000/api'
+export const apiUrl = 'https://ecommerce.softnovait.com/api/'
 
-export const localBaseUrl = 'http://127.0.0.1:8000'
+// export const localBaseUrl = 'http://127.0.0.1:8000'
+export const localBaseUrl = 'https://ecommerce.softnovait.com'
 
 export const adminToken = () => {
     // const data = JSON.parse(localStorage.getItem('adminInfo'))
