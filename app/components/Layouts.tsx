@@ -19,8 +19,8 @@ export default function Layout({ children }: LayoutProps) {
     { name: "Home", href: "/" },
     { name: "Shop", href: "/shop" },
     { name: "Featured Products", href: "/featured-products" },
-    { name: "Categories", href: "/categories" },
-    { name: "New Arrivals", href: "/new-arrivals" },
+    { name: "Categories", href: "/pages/categories" },
+    { name: "New Arrivals", href: "/pages/new-arrivals" },
     { name: "Best Sellers", href: "/best-sellers" },
     { name: "Sale", href: "/sale" },
   ];

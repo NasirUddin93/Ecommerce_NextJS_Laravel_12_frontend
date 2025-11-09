@@ -1,32 +1,31 @@
 "use client";
 import React, { useState, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
-import { BestSellerProduct, FilterState, ViewMode } from '../types/best-sellers';
-import { mockBestSellers, sortOptions, filterOptions, timeFrameStats } from '../data/mockBestSellers';
-import BestSellerCard from '../components/BestSellerCard';
-import BestSellersStats from '../components/BestSellersStats';
-import BestSellersFilter from '../components/BestSellersFilter';
-import { Search, Filter, Grid, List, Award, TrendingUp, Zap } from 'lucide-react';
+import { useRouter } from 'next/navigation'; // ← Change this import
+import { NewArrivalProduct, FilterState, ViewMode } from '../../types/new-arrivals';
+import { mockNewArrivals, sortOptions, filterOptions } from '../../data/mockNewArrivals';
+import NewArrivalCard from '../../components/NewArrivalCard';
+import NewArrivalsFilter from '../../components/NewArrivalsFilter';
+import { Search, Filter, Grid, List, Layout, Zap, Clock, TrendingUp } from 'lucide-react';
 
-const BestSellersPage = () => {
-  const router = useRouter();
+const NewArrivalsPage = () => { // ← Remove NextPage type
+  const router = useRouter(); // ← Now this will work with App Router
   const [filters, setFilters] = useState<FilterState>({
     categories: [],
     brands: [],
     priceRange: [0, 1500],
     ratings: [],
     tags: [],
-    timeFrame: 'all-time',
-    availability: 'all'
+    availability: 'all',
+    featured: false
   });
-  const [sortBy, setSortBy] = useState<string>('rank');
+  const [sortBy, setSortBy] = useState<string>('newest');
   const [searchQuery, setSearchQuery] = useState('');
-  const [viewMode, setViewMode] = useState<ViewMode>({ type: 'ranked', columns: 3 });
+  const [viewMode, setViewMode] = useState<ViewMode>({ type: 'grid', columns: 4 });
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   // Filter and sort products
   const filteredAndSortedProducts = useMemo(() => {
-    let filtered = mockBestSellers.filter(product => {
+    let filtered = mockNewArrivals.filter(product => {
       // Search filter
       if (searchQuery && 
           !product.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
@@ -69,14 +68,19 @@ const BestSellersPage = () => {
         return false;
       }
 
+      // Featured filter
+      if (filters.featured && !product.featured) {
+        return false;
+      }
+
       return true;
     });
 
     // Sort products
     const sortOption = sortOptions.find(option => option.value === sortBy) || sortOptions[0];
     filtered.sort((a, b) => {
-      const aValue = a[sortOption.field as keyof BestSellerProduct];
-      const bValue = b[sortOption.field as keyof BestSellerProduct];
+      const aValue = a[sortOption.field as keyof NewArrivalProduct];
+      const bValue = b[sortOption.field as keyof NewArrivalProduct];
       
       if (typeof aValue === 'string' && typeof bValue === 'string') {
         return sortOption.order === 'asc' 
@@ -94,23 +98,32 @@ const BestSellersPage = () => {
     return filtered;
   }, [filters, sortBy, searchQuery]);
 
-  // Calculate average rating
-  const averageRating = useMemo(() => {
-    const total = mockBestSellers.reduce((sum, product) => sum + product.rating, 0);
-    return (total / mockBestSellers.length).toFixed(1);
+  // Stats
+  const stats = useMemo(() => {
+    const totalProducts = mockNewArrivals.length;
+    const featuredProducts = mockNewArrivals.filter(p => p.featured).length;
+    const bestsellers = mockNewArrivals.filter(p => p.isBestseller).length;
+    const justAdded = mockNewArrivals.filter(p => {
+      const arrival = new Date(p.arrivalDate);
+      const today = new Date();
+      const diffTime = Math.abs(today.getTime() - arrival.getTime());
+      return Math.ceil(diffTime / (1000 * 60 * 60 * 24)) <= 3;
+    }).length;
+
+    return { totalProducts, featuredProducts, bestsellers, justAdded };
   }, []);
 
-  const handleAddToCart = (product: BestSellerProduct) => {
+  const handleAddToCart = (product: NewArrivalProduct) => {
     console.log('Adding to cart:', product);
     // Implement cart logic
   };
 
-  const handleQuickView = (product: BestSellerProduct) => {
+  const handleQuickView = (product: NewArrivalProduct) => {
     console.log('Quick view:', product);
     // Implement quick view modal
   };
 
-  const handleAddToWishlist = (product: BestSellerProduct) => {
+  const handleAddToWishlist = (product: NewArrivalProduct) => {
     console.log('Add to wishlist:', product);
     // Implement wishlist logic
   };
@@ -122,14 +135,10 @@ const BestSellersPage = () => {
       priceRange: [0, 1500],
       ratings: [],
       tags: [],
-      timeFrame: 'all-time',
-      availability: 'all'
+      availability: 'all',
+      featured: false
     });
     setSearchQuery('');
-  };
-
-  const handleTimeFrameChange = (timeFrame: string) => {
-    setFilters(prev => ({ ...prev, timeFrame: timeFrame as any }));
   };
 
   const gridClasses = useMemo(() => {
@@ -138,8 +147,8 @@ const BestSellersPage = () => {
     switch (viewMode.type) {
       case 'list':
         return `${baseClasses} grid-cols-1`;
-      case 'ranked':
-        return `${baseClasses} grid-cols-1`;
+      case 'masonry':
+        return `${baseClasses} grid-cols-1 md:grid-cols-2 lg:grid-cols-3 auto-rows-max`;
       default:
         return `${baseClasses} grid-cols-1 sm:grid-cols-2 lg:grid-cols-${viewMode.columns}`;
     }
@@ -154,23 +163,57 @@ const BestSellersPage = () => {
       filters.priceRange[0] > 0 ||
       filters.priceRange[1] < 1500 ||
       filters.availability !== 'all' ||
-      filters.timeFrame !== 'all-time' ||
+      filters.featured ||
       searchQuery
     );
   }, [filters, searchQuery]);
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header with Stats */}
+      {/* Header */}
       <div className="bg-white shadow-sm border-b">
         <div className="container mx-auto px-4 py-8">
-          <BestSellersStats
-            stats={timeFrameStats[filters.timeFrame]}
-            timeFrame={filters.timeFrame}
-            onTimeFrameChange={handleTimeFrameChange}
-            totalProducts={mockBestSellers.length}
-            averageRating={parseFloat(averageRating)}
-          />
+          <nav className="flex items-center gap-2 text-sm text-gray-600 mb-4">
+            <button onClick={() => router.push('/')} className="hover:text-gray-900 transition-colors">
+              Home
+            </button>
+            <span>/</span>
+            <span className="text-gray-900 font-medium">New Arrivals</span>
+          </nav>
+          
+          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
+            <div>
+              <h1 className="text-4xl font-bold text-gray-900 mb-4">New Arrivals</h1>
+              <p className="text-xl text-gray-600 max-w-2xl">
+                Discover the latest products just added to our collection. Fresh styles, innovative technology, and exclusive new items.
+              </p>
+            </div>
+
+            {/* Stats */}
+            <div className="flex flex-wrap gap-4">
+              <div className="text-center">
+                <div className="flex items-center gap-1 text-blue-600 mb-1">
+                  <Clock className="w-4 h-4" />
+                  <span className="text-2xl font-bold">{stats.justAdded}</span>
+                </div>
+                <div className="text-sm text-gray-600">Just Added</div>
+              </div>
+              <div className="text-center">
+                <div className="flex items-center gap-1 text-purple-600 mb-1">
+                  <TrendingUp className="w-4 h-4" />
+                  <span className="text-2xl font-bold">{stats.bestsellers}</span>
+                </div>
+                <div className="text-sm text-gray-600">Bestsellers</div>
+              </div>
+              <div className="text-center">
+                <div className="flex items-center gap-1 text-green-600 mb-1">
+                  <Zap className="w-4 h-4" />
+                  <span className="text-2xl font-bold">{stats.featuredProducts}</span>
+                </div>
+                <div className="text-sm text-gray-600">Featured</div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -178,7 +221,7 @@ const BestSellersPage = () => {
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Filters Sidebar */}
           <div className="lg:w-64 flex-shrink-0">
-            <BestSellersFilter
+            <NewArrivalsFilter
               filters={filters}
               filterOptions={filterOptions}
               onFilterChange={setFilters}
@@ -206,7 +249,7 @@ const BestSellersPage = () => {
 
                   {/* Results Count */}
                   <div className="text-sm text-gray-600">
-                    Showing {filteredAndSortedProducts.length} of {mockBestSellers.length} best sellers
+                    Showing {filteredAndSortedProducts.length} of {stats.totalProducts} products
                   </div>
 
                   {/* Active Filters Indicator */}
@@ -227,7 +270,7 @@ const BestSellersPage = () => {
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                     <input
                       type="text"
-                      placeholder="Search best sellers..."
+                      placeholder="Search new arrivals..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
@@ -237,10 +280,10 @@ const BestSellersPage = () => {
                   {/* View Mode */}
                   <div className="flex border border-gray-300 rounded-lg overflow-hidden">
                     <button
-                      onClick={() => setViewMode(prev => ({ ...prev, type: 'ranked' }))}
-                      className={`p-2 ${viewMode.type === 'ranked' ? 'bg-gray-100' : 'hover:bg-gray-50'}`}
+                      onClick={() => setViewMode(prev => ({ ...prev, type: 'grid' }))}
+                      className={`p-2 ${viewMode.type === 'grid' ? 'bg-gray-100' : 'hover:bg-gray-50'}`}
                     >
-                      <Award className="w-4 h-4" />
+                      <Grid className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => setViewMode(prev => ({ ...prev, type: 'list' }))}
@@ -249,10 +292,10 @@ const BestSellersPage = () => {
                       <List className="w-4 h-4" />
                     </button>
                     <button
-                      onClick={() => setViewMode(prev => ({ ...prev, type: 'grid' }))}
-                      className={`p-2 ${viewMode.type === 'grid' ? 'bg-gray-100' : 'hover:bg-gray-50'}`}
+                      onClick={() => setViewMode(prev => ({ ...prev, type: 'masonry' }))}
+                      className={`p-2 ${viewMode.type === 'masonry' ? 'bg-gray-100' : 'hover:bg-gray-50'}`}
                     >
-                      <Grid className="w-4 h-4" />
+                      <Layout className="w-4 h-4" />
                     </button>
                   </div>
 
@@ -319,10 +362,10 @@ const BestSellersPage = () => {
                       </button>
                     </span>
                   ))}
-                  {filters.timeFrame !== 'all-time' && (
-                    <span className="inline-flex items-center gap-1 bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm">
-                      {timeFrameStats[filters.timeFrame].label}
-                      <button onClick={() => setFilters(prev => ({ ...prev, timeFrame: 'all-time' }))}>
+                  {filters.featured && (
+                    <span className="inline-flex items-center gap-1 bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">
+                      Featured Only
+                      <button onClick={() => setFilters(prev => ({ ...prev, featured: false }))}>
                         ×
                       </button>
                     </span>
@@ -335,7 +378,7 @@ const BestSellersPage = () => {
             {filteredAndSortedProducts.length > 0 ? (
               <div className={gridClasses}>
                 {filteredAndSortedProducts.map(product => (
-                  <BestSellerCard
+                  <NewArrivalCard
                     key={product.id}
                     product={product}
                     viewMode={viewMode.type}
@@ -347,10 +390,10 @@ const BestSellersPage = () => {
               </div>
             ) : (
               <div className="text-center py-16">
-                <div className="text-gray-400 text-6xl mb-4">🏆</div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">No best sellers found</h3>
+                <div className="text-gray-400 text-6xl mb-4">🔍</div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">No new arrivals found</h3>
                 <p className="text-gray-600 mb-6 max-w-md mx-auto">
-                  Try adjusting your search terms or filters to find what you're looking for.
+                  Try adjusting your search terms or filters. New products are added regularly, so check back soon!
                 </p>
                 <button
                   onClick={handleClearFilters}
@@ -361,31 +404,12 @@ const BestSellersPage = () => {
               </div>
             )}
 
-            {/* Trust Badges */}
+            {/* Load More (for pagination) */}
             {filteredAndSortedProducts.length > 0 && (
-              <div className="mt-12 text-center">
-                <div className="bg-white rounded-xl shadow-sm border p-8">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                    Why Shop Best Sellers?
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="flex flex-col items-center">
-                      <TrendingUp className="w-8 h-8 text-green-500 mb-2" />
-                      <h4 className="font-medium text-gray-900 mb-1">Proven Quality</h4>
-                      <p className="text-gray-600 text-sm">Loved by thousands of customers</p>
-                    </div>
-                    <div className="flex flex-col items-center">
-                      <Award className="w-8 h-8 text-yellow-500 mb-2" />
-                      <h4 className="font-medium text-gray-900 mb-1">Top Rated</h4>
-                      <p className="text-gray-600 text-sm">Highest customer satisfaction</p>
-                    </div>
-                    <div className="flex flex-col items-center">
-                      <Zap className="w-8 h-8 text-blue-500 mb-2" />
-                      <h4 className="font-medium text-gray-900 mb-1">Fast Delivery</h4>
-                      <p className="text-gray-600 text-sm">Quick shipping on popular items</p>
-                    </div>
-                  </div>
-                </div>
+              <div className="text-center mt-12">
+                <button className="bg-white border border-gray-300 px-8 py-3 rounded-lg hover:bg-gray-50 transition-colors font-medium">
+                  Load More New Arrivals
+                </button>
               </div>
             )}
           </div>
@@ -395,4 +419,4 @@ const BestSellersPage = () => {
   );
 };
 
-export default BestSellersPage;
+export default NewArrivalsPage;
